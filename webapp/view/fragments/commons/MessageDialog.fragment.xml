@@ -1,0 +1,72 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+	xmlns:core="sap.ui.core">
+	<!-- @ui5ignore -->
+	<Dialog id="messageDialog" 
+		busy="{__messageView>/busy}"
+		busyIndicatorDelay="{__messageView>/busyDelay}"
+		state="{__messageView>/state}"
+		title="{__messageView>/title}"
+		afterClose=".onAfterClose"
+		contentHeight="440px" contentWidth="440px"
+		horizontalScrolling="false" verticalScrolling="false"
+		draggable="true"
+		initialFocus="Close"
+		resizable="true"
+		showHeader="true"
+		type="Message" >
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					<Text text="{__messageView>/title}"/>
+				</contentMiddle>
+				<contentLeft>
+					<!-- @ui5ignore -->
+					<Button icon="sap-icon://nav-back" 
+						visible="{__messageView>/backbtnvisibility}" 
+						press=".onBackButtonPress" 
+						tooltip="{i18n>BACK}" />
+				</contentLeft>
+			</Bar>
+		</customHeader>
+		<content>
+            
+			<List 
+                id="messageView"
+                items="{msg>/}">
+                <items>
+                    <CustomListItem
+                        >
+                        <HBox>
+                            <core:Icon 
+                                color="{path: 'msg>type', formatter: '.formatMsgIconColor'}"
+                                src="{path: 'msg>type', formatter: '.formatMsgIcon'}" />
+                            <ObjectIdentifier 
+                                class="sapUiSmallMarginBegin"
+                                text="{msg>message}" />
+                        </HBox>
+                        <Text text="{msg>description}" />
+                    </CustomListItem>
+                </items>
+            </List>
+			<!--
+			<MessageView id="messageView" 
+				items="{msg>/}"
+				showDetailsPageHeader="false" 
+				itemSelect=".onMessageSelect" 
+				groupItems="true">
+				<MessageItem id="messageItem" type="{msg>type}" title="{msg>message}" description="{msg>description}" subtitle="{msg>additionalText}" 
+						longtextUrl="{msg>descriptionUrl}" />
+			</MessageView>	            
+			-->
+		</content>
+		<beginButton>
+			<!-- @ui5ignore -->
+			<Button text="{__messageView>/textSuccess}" visible="{__messageView>/success}"  press=".onAccept" type="Emphasized"/>
+		</beginButton>
+		<endButton>
+			<!-- @ui5ignore -->
+			<Button text="{i18n>CLOSE}" visible="{= !(${__messageView>/success}) }" press=".onReject"/>
+		</endButton>
+	</Dialog>
+</core:FragmentDefinition>

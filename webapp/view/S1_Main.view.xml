@@ -1,0 +1,38 @@
+<mvc:View
+    controllerName="com.eldorado.sap.eblog.schedulewindow.controller.S1_Main"
+    xmlns:smVariaM="sap.ui.comp.smartvariants"
+    xmlns:mvc="sap.ui.core.mvc"        
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f"
+    xmlns="sap.m"
+>
+    <f:DynamicPage id="page" busy="{view>/state/busy}" busyIndicatorDelay="{view>/state/delay}">
+        <f:title>
+            <f:DynamicPageTitle>
+                <f:heading>
+			        <smVariaM:SmartVariantManagement id="__SVM01"
+						persistencyKey="com.eldorado.sap.eblog.schedulewindow" entitySet="ScheduleWindowSet"
+                        showShare="true" showExecuteOnSelection="true" />
+			    </f:heading>
+                <f:snappedContent>
+                    <Title text="{i18n>title}"/>
+                </f:snappedContent>
+                <f:expandedContent>
+                    <Title text="{i18n>title}"/>
+                </f:expandedContent>
+            </f:DynamicPageTitle>
+        </f:title>
+        <f:header>
+            <f:DynamicPageHeader>
+				<f:content>
+                    <core:Fragment fragmentName="com.eldorado.sap.eblog.schedulewindow.view.fragments.s1.ScheduleFilter" type="XML" />
+                </f:content>
+            </f:DynamicPageHeader>
+        </f:header>
+        <f:content>           
+            <core:Fragment fragmentName="com.eldorado.sap.eblog.schedulewindow.view.fragments.s1.ScheduleTable" type="XML" />
+            <!--<mvc:XMLView viewName="com.eldorado.sap.eblog.schedulewindow.view.fragments.s1.ScheduleTable"/>-->
+
+        </f:content>
+    </f:DynamicPage>
+</mvc:View>

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="1.0" xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx" xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata" xmlns:sap="http://www.sap.com/Protocols/SAPData">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema Namespace="ZGWEWM_EBLOG_MONIT_AGEND_SRV" xml:lang="pt" sap:schema-version="1" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+            <EntityType Name="ScheduleWindowType" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Plant"/>
+                    <PropertyRef Name="ScheduleWindowTp"/>
+                    <PropertyRef Name="ScheduleWindowGuid"/>
+                </Key>
+                <Property Name="CreationDate" Type="Edm.DateTime" Precision="7" sap:display-format="Date" sap:label="Data Criação" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ScheduleWindowBeginDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora iní Janela" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ChangeDate" Type="Edm.DateTime" Precision="7" sap:display-format="Date" sap:label="Data Modificação" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ScheduleWindowEndDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora fim Janela" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="UnloadBeginDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora iní Descar." sap:creatable="false" sap:updatable="false"/>
+                <Property Name="UnloadEndDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora fim Descar." sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ArriveDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora chegada" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="DepartureDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data hora saida" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="UnloadComposBeginDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data/Hora Início Descarga Composição" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="UnloadComposEndDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data/Hora Fim Descarga Composição" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="RailwayManeuverBeginDatetim" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data/Hora Início Manobra Composição" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="RailwayManeuverEndDatetime" Type="Edm.DateTimeOffset" Precision="0" sap:label="Data/Hora Fim Manobra Composição" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Plant" Type="Edm.String" Nullable="false" MaxLength="4" sap:text="toPlant/Name1" sap:label="Centro" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ScheduleWindowTp" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Tp.Janela Agendamento" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ScheduleWindowGuid" Type="Edm.String" Nullable="false" MaxLength="32" sap:label="GUID Janela" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="IsScheduleActive" Type="Edm.Boolean" sap:label="Ativo / Inativo" sap:creatable="false" sap:updatable="false" sap:filterable="false"/>
+                <Property Name="ScheduleCode" Type="Edm.String" MaxLength="10" sap:label="Nr. Agend." sap:creatable="false"/>
+                <Property Name="FiscalYear" Type="Edm.String" MaxLength="4" sap:label="Exercício" sap:creatable="false"/>
+                <Property Name="IsDeleted" Type="Edm.Boolean" sap:label="Código eliminação" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ChangeUser" Type="Edm.String" MaxLength="12" sap:label="Modificado por" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="Machine" Type="Edm.String" MaxLength="20" sap:label="Máquina" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="CreationUser" Type="Edm.String" MaxLength="12" sap:label="Criado por" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ScheduleLocation" Type="Edm.String" MaxLength="255" sap:label="Local Agendamento" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="RailwayManeuverLine" Type="Edm.String" MaxLength="1" sap:label="Linha Manobra Vagão" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="CreationTime" Type="Edm.Time" Precision="0" sap:label="Hora Criação" sap:creatable="false" sap:updatable="false"/>
+                <Property Name="ChangeTime" Type="Edm.Time" Precision="0" sap:label="Hora Modificação" sap:creatable="false" sap:updatable="false"/>
+                <NavigationProperty Name="toSchedule" Relationship="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Assoc_SchedWindow_2_Scheduling" FromRole="ToRole_Assoc_SchedWindow_2_Scheduling" ToRole="FromRole_Assoc_SchedWindow_2_Scheduling" sap:label="Agendamento"/>
+                <NavigationProperty Name="toPlant" Relationship="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Assoc_SchedWindow_2_Plant" FromRole="ToRole_Assoc_SchedWindow_2_Plant" ToRole="FromRole_Assoc_SchedWindow_2_Plant" sap:label="Centro"/>
+            </EntityType>
+            <EntityType Name="SchedulingType" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Scheduling"/>
+                    <PropertyRef Name="FiscalYear"/>
+                </Key>
+                <Property Name="Scheduling" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Nr. Agend." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="FiscalYear" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Exercício" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SchedulingStatus" Type="Edm.String" MaxLength="2" sap:label="Status" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SourcePlant" Type="Edm.String" MaxLength="4" sap:label="Centro origem" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Plant" Type="Edm.String" MaxLength="4" sap:label="Centro" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Customer" Type="Edm.String" MaxLength="10" sap:label="Cliente" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SchedulingDate" Type="Edm.DateTime" Precision="7" sap:label="Dt.Agend." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierTruck" Type="Edm.String" MaxLength="15" sap:label="Cavalo" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierFirst" Type="Edm.String" MaxLength="15" sap:label="Carreta 01" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierSecondary" Type="Edm.String" MaxLength="15" sap:label="Carreta 02" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierThird" Type="Edm.String" MaxLength="15" sap:label="Carreta 03" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierFourth" Type="Edm.String" MaxLength="15" sap:label="Carreta 04" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierFirstMaxLoad" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Carga máx. Carreta 1" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierSecondaryMaxLoad" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Carga máx. Carreta 2" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierThirdMaxLoad" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Carga máx. Carreta 3" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CarrierFourthMaxLoad" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Carga máx. Carreta 4" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="UnitOfMeasure" Type="Edm.String" MaxLength="3" sap:label="UM básica" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:semantics="unit-of-measure"/>
+                <Property Name="MaxWeight" Type="Edm.Decimal" Precision="13" Scale="3" sap:unit="UnitOfMeasure" sap:label="Carga máx." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SalesDocument" Type="Edm.String" MaxLength="10" sap:label="Doc.vendas" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SalesDocumentItem" Type="Edm.String" MaxLength="6" sap:label="Item Doc. Vendas" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ShippingParty" Type="Edm.String" MaxLength="10" sap:label="Transportadora" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="TechObjectType" Type="Edm.String" MaxLength="10" sap:label="Tipo de objeto Téc." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Driver" Type="Edm.String" MaxLength="8" sap:label="Motorista" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ScheduleWindow" Type="Edm.String" MaxLength="1" sap:label="Janela" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="PagerNumber" Type="Edm.String" MaxLength="6" sap:label="Nr.Pager" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="OrdinanceNumber" Type="Edm.String" MaxLength="20" sap:label="Nº Portaria" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="LoadDocument" Type="Edm.String" MaxLength="16" sap:label="Documento de Carreg." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="LoadDocumentItem" Type="Edm.String" MaxLength="3" sap:label="Item DC" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="SequenceNumber" Type="Edm.String" MaxLength="3" sap:label="Nº registro IT" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Priority" Type="Edm.String" MaxLength="1" sap:label="Prioridade" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ResponsabilityTermId" Type="Edm.String" MaxLength="10" sap:label="ID Termo de Resp." sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="FriScheduling" Type="Edm.String" MaxLength="5" sap:label="Agendamento FRI" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ReplanningStatus" Type="Edm.String" MaxLength="2" sap:label="Status replanejament" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ReplanningStatusEdit" Type="Edm.String" MaxLength="2" sap:label="Status replanejament EDIT" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="WagonBarge" Type="Edm.String" MaxLength="1" sap:label="Vagão / barcaça" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="HiringDocument" Type="Edm.String" MaxLength="10" sap:label="Documento contratação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="DeliveryVoucherStatus" Type="Edm.String" MaxLength="2" sap:label="St. Comprov. Entrega" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="DeliveryVoucherStatusDate" Type="Edm.DateTime" Precision="7" sap:label="Data alteração status" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ChangeUser" Type="Edm.String" MaxLength="12" sap:label="Modificado por" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ChangeDate" Type="Edm.DateTime" Precision="7" sap:label="Data Modificação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ChangeTime" Type="Edm.Time" Precision="0" sap:label="Hora Modificação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="IsDeleted" Type="Edm.String" MaxLength="1" sap:label="Código eliminação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CreationUser" Type="Edm.String" MaxLength="12" sap:label="Criado por" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CreationTime" Type="Edm.Time" Precision="0" sap:label="Hora Criação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="CreationDate" Type="Edm.DateTime" Precision="7" sap:label="Data Criação" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Machine" Type="Edm.String" MaxLength="20" sap:label="Máquina" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="LogMessageType" Type="Edm.String" MaxLength="1" sap:label="Tipo mensagem" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageId" Type="Edm.String" MaxLength="20" sap:label="Classe de mensagem" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageNumber" Type="Edm.String" MaxLength="3" sap:label="Nº mensagem" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageParam1" Type="Edm.String" MaxLength="50" sap:label="Variável mensagens" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageParam2" Type="Edm.String" MaxLength="50" sap:label="Variável mensagens" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageParam3" Type="Edm.String" MaxLength="50" sap:label="Variável mensagens" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="LogMessageParam4" Type="Edm.String" MaxLength="50" sap:label="Variável mensagens" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="Zle026T001w" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Werks"/>
+                </Key>
+                <Property Name="Werks" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Centro" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Sort2" Type="Edm.String" MaxLength="20" sap:label="Termo pesq.2" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Sort1" Type="Edm.String" MaxLength="20" sap:label="Termo pesq.1" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="PostCode1" Type="Edm.String" MaxLength="10" sap:label="Código postal" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="City1" Type="Edm.String" MaxLength="40" sap:label="Local" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Name2" Type="Edm.String" MaxLength="40" sap:label="Nome 2" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Name1" Type="Edm.String" MaxLength="40" sap:label="Nome" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Nation" Type="Edm.String" MaxLength="1" sap:label="Versão endereço" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+            </EntityType>
+            <EntityType Name="ZshewmAtivoInativo" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="ActiveStatus"/>
+                </Key>
+                <Property Name="ActiveStatus" Type="Edm.Boolean" Nullable="false" sap:label="Ativo = 'X' / Inativ" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="ActiveStatusText" Type="Edm.String" Nullable="false" MaxLength="60" sap:label="Descrição breve" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+            </EntityType>
+            <EntityType Name="AuthorityType" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Process"/>
+                    <PropertyRef Name="Activity"/>
+                </Key>
+                <Property Name="Process" Type="Edm.String" Nullable="false" MaxLength="10" sap:label="Processo EBLOG" sap:creatable="false" sap:updatable="false" sap:sortable="false"/>
+                <Property Name="Activity" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Atividade para verificação de autorização" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Success" Type="Edm.Boolean" Nullable="false" sap:label="Sucesso na verificação" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <Association Name="Assoc_SchedWindow_2_Plant" sap:content-version="1">
+                <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Zle026T001w" Multiplicity="1" Role="FromRole_Assoc_SchedWindow_2_Plant"/>
+                <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" Multiplicity="1" Role="ToRole_Assoc_SchedWindow_2_Plant"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_Assoc_SchedWindow_2_Plant">
+                        <PropertyRef Name="Werks"/>
+                    </Principal>
+                    <Dependent Role="ToRole_Assoc_SchedWindow_2_Plant">
+                        <PropertyRef Name="Plant"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <Association Name="Assoc_SchedWindow_2_Scheduling" sap:content-version="1">
+                <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.SchedulingType" Multiplicity="1" Role="FromRole_Assoc_SchedWindow_2_Scheduling"/>
+                <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" Multiplicity="0..1" Role="ToRole_Assoc_SchedWindow_2_Scheduling"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_Assoc_SchedWindow_2_Scheduling">
+                        <PropertyRef Name="Scheduling"/>
+                        <PropertyRef Name="FiscalYear"/>
+                    </Principal>
+                    <Dependent Role="ToRole_Assoc_SchedWindow_2_Scheduling">
+                        <PropertyRef Name="ScheduleCode"/>
+                        <PropertyRef Name="FiscalYear"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ZGWEWM_EBLOG_MONIT_AGEND_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="ScheduleWindowSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" sap:label="Janelas de Agendamento" sap:creatable="false" sap:content-version="1"/>
+                <EntitySet Name="SchedulingSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.SchedulingType" sap:label="Agendamento" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1"/>
+                <EntitySet Name="PlantSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Zle026T001w" sap:label="Centro VH" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="ActiveStatusIndicatorSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ZshewmAtivoInativo" sap:label="Status Ativo VH" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="AuthoritySet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.AuthorityType" sap:label="Verificação de autorização" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <AssociationSet Name="Assoc_SchedWindow_2_PlantSet" Association="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Assoc_SchedWindow_2_Plant" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="PlantSet" Role="FromRole_Assoc_SchedWindow_2_Plant"/>
+                    <End EntitySet="ScheduleWindowSet" Role="ToRole_Assoc_SchedWindow_2_Plant"/>
+                </AssociationSet>
+                <AssociationSet Name="Assoc_SchedWindow_2_SchedulingSet" Association="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Assoc_SchedWindow_2_Scheduling" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="SchedulingSet" Role="FromRole_Assoc_SchedWindow_2_Scheduling"/>
+                    <End EntitySet="ScheduleWindowSet" Role="ToRole_Assoc_SchedWindow_2_Scheduling"/>
+                </AssociationSet>
+                <FunctionImport Name="ActivationChange" ReturnType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" EntitySet="ScheduleWindowSet" m:HttpMethod="POST" sap:label="Modificar status de ativação" sap:action-for="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType">
+                    <Parameter Name="ScheduleWindowGuid" Type="Edm.String" Mode="In" MaxLength="32"/>
+                    <Parameter Name="ScheduleWindowTp" Type="Edm.String" Mode="In" MaxLength="4"/>
+                    <Parameter Name="Plant" Type="Edm.String" Mode="In" MaxLength="4"/>
+                    <Parameter Name="ActivationStatus" Type="Edm.Boolean" Mode="In"/>
+                </FunctionImport>
+                <FunctionImport Name="DeleteScheduleWindow" ReturnType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" EntitySet="ScheduleWindowSet" m:HttpMethod="POST" sap:label="Deleção de janelas de agendamento" sap:action-for="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType">
+                    <Parameter Name="ScheduleWindowGuid" Type="Edm.String" Mode="In" MaxLength="32"/>
+                    <Parameter Name="ScheduleWindowTp" Type="Edm.String" Mode="In" MaxLength="4"/>
+                    <Parameter Name="Plant" Type="Edm.String" Mode="In" MaxLength="4"/>
+                </FunctionImport>
+                <FunctionImport Name="AuthorityCheck" ReturnType="Collection(ZGWEWM_EBLOG_MONIT_AGEND_SRV.AuthorityType)" EntitySet="AuthoritySet" m:HttpMethod="GET" sap:label="Verificação de autorização" sap:action-for="ZGWEWM_EBLOG_MONIT_AGEND_SRV.AuthorityType"/>
+            </EntityContainer>
+            <atom:link rel="self" href="http://brspowvgtw01.enterprise.ad:8000/sap/opu/odata/sap/ZGWEWM_EBLOG_MONIT_AGEND_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+            <atom:link rel="latest-version" href="http://brspowvgtw01.enterprise.ad:8000/sap/opu/odata/sap/ZGWEWM_EBLOG_MONIT_AGEND_SRV/$metadata" xmlns:atom="http://www.w3.org/2005/Atom"/>
+        </Schema>
+    </edmx:DataServices>
+</edmx:Edmx>

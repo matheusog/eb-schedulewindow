@@ -1,0 +1,106 @@
+<core:FragmentDefinition 
+    xmlns:smTable="sap.ui.comp.smarttable"
+    xmlns:core="sap.ui.core"
+    xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+    xmlns="sap.m">    
+
+    <smTable:SmartTable class="sapUiResponsiveContentPadding" id="smTable"
+        entitySet="ScheduleWindowSet" smartFilterId="smartFilterBar"
+		tableType="ResponsiveTable" useExportToExcel="true" 
+		useVariantManagement="true" useTablePersonalisation="true" header="{i18n>s1.table.title}"
+		showRowCount="true" persistencyKey="com.eldorado.sap.eblog.schedulewindow.SmartTable" enableAutoBinding="true"
+		demandPopin="true"  smartVariant="__SVM01" editable="{view>/data/editable}"
+        requestAtLeastFields="Plant,ScheduleWindowGuid,ScheduleWindowTp,IsScheduleActive,IsDeleted"
+        beforeRebindTable=".onBeforeRebind" >   
+            <!-- app:useSmartField="true" -->
+            <!-- editToggled=".onTogglePress" editTogglable="true" app:useSmartToggle="true" -->
+        <smTable:layoutData>
+		    <FlexItemData growFactor="1" baseSize="0%"/>
+	    </smTable:layoutData>
+        <smTable:customData>
+            <!--<core:CustomData key="useUTCDateTime" value="true"/>-->
+            <core:CustomData key="dateFormatSettings" value='\{"UTC":false,"style":"medium"\}' />
+        </smTable:customData>
+        <smTable:customToolbar>
+            <OverflowToolbar>
+                <ToolbarSpacer />
+                <!--<Button tooltip="{= ${view>/data/editable} ? ${i18n>s1.table.button.display} : ${i18n>s1.table.button.edit} }" 
+                        icon="{= ${view>/data/editable} ? 'sap-icon://display' : 'sap-icon://edit' }" />-->                
+                <Button tooltip="{i18n>s1.table.button.edit}" icon="sap-icon://edit" visible="{= ${view>/data/editable}  &amp;&amp; ${authority>/02} }" 
+                    press=".onEdit" />
+                <Button text="{i18n>s1.table.button.save}" icon="sap-icon://save" visible="{view>/data/editable}"
+                    press=".onSave" />
+                <Button text="{i18n>s1.table.button.cancel}" icon="sap-icon://cancel" visible="{view>/data/editable}"
+                    press=".onCancel" />
+                <ToolbarSeparator visible="false" />
+                <Button tooltip="{i18n>s1.table.button.delete}" icon="sap-icon://delete" type="Reject" visible="{= !${view>/data/editable}  &amp;&amp; ${authority>/06} }" 
+                    press=".onDelete" />
+                <Button text="{i18n>s1.table.button.activate}" icon="sap-icon://activate" type="Accept" visible="{= !${view>/data/editable} &amp;&amp; ${authority>/07} }" 
+                    press=".onActivate" />
+                <Button text="{i18n>s1.table.button.inactivate}" icon="sap-icon://status-inactive" type="Critical" visible="{= !${view>/data/editable} &amp;&amp; ${authority>/05} }" 
+                    press=".onInactivate" />                                
+                <ToolbarSeparator visible="{= !${view>/data/editable} }" />
+            </OverflowToolbar>
+        </smTable:customToolbar>
+        <Table 
+          growing="true" 
+          growingScrollToLoad="true"
+          growingThreshold="100"
+          mode="MultiSelect"
+          sticky="ColumnHeaders,HeaderToolbar"
+          > 
+            <columns>
+                <!--
+                <Column width="20rem">
+                    <customData>
+                        <core:CustomData key="p13nData" 
+                            value='\{ "columnKey": "ScheduleWindowGuid", "autoColumnWidth": \{ "visibleProperty": "ScheduleWindowGuid" }, "columnIndex": 0, 
+                      "leadingProperty": "ScheduleWindowGuid", "sortProperty": "ScheduleWindowGuid", "additionalProperty": "", 
+                      "description": "", "displayBehaviour": "idOnly" }' />
+                        </customData>
+                        <Text text="{/#ScheduleWindowType/ScheduleWindowGuid/@sap:label}" />
+                </Column>
+                -->
+                <!--
+                <Column width="20rem">
+                    <customData>
+                        <core:CustomData key="p13nData" 
+                            value='\{ "columnKey": "toSchedule/ShippingParty", "autoColumnWidth": \{ "visibleProperty": "toSchedule/ShippingParty" }, "columnIndex": 12, 
+                      "leadingProperty": "toSchedule/ShippingParty", "sortProperty": "toSchedule/ShippingParty", "additionalProperty": "", 
+                      "description": "", "displayBehaviour": "idOnly" }' />
+                        </customData>
+                        <Text text="{/#SchedulingType/ShippingParty/@sap:label}" />
+                </Column>
+                -->
+            </columns>
+            <items>
+                <ColumnListItem
+                    vAlign="Inherit"
+                >
+                    <!--<Text text="{ScheduleWindowGuid}"/>-->
+                    <!--<Text text="{toSchedule/ShippingParty}"/>-->
+                </ColumnListItem>
+            </items>
+        </Table>
+    </smTable:SmartTable>
+
+    <!--<Table
+        mode="MultiSelect"
+		items="{
+			path: '/ScheduleWindowSet',
+			sorter: [
+                { path: 'Plant' },
+                { path: 'ScheduleWindowBeginDatetime' },
+                { path: 'ScheduleWindowEndDatetime' }
+            ]
+		}">
+        <columns>
+           <Column></Column> 
+        </columns>
+        <items>
+            <ColumnListItem>
+                <ObjectIdentifier title="{Plant}" text="{ScheduleWindowGuid}" />
+            </ColumnListItem>
+        </items>
+    </Table>-->
+</core:FragmentDefinition>

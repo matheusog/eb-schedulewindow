@@ -1,0 +1,11 @@
+<mvc:View
+    controllerName="com.eldorado.sap.eblog.schedulewindow.controller.S0_App"
+    xmlns:mvc="sap.ui.core.mvc"    
+    xmlns="sap.m"
+    displayBlock="true"
+>
+    <App id="app">
+        <pages>
+        </pages>
+    </App>
+</mvc:View>

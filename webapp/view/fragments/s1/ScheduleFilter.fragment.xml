@@ -1,0 +1,54 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+    xmlns:smFilterBar="sap.ui.comp.smartfilterbar"
+    xmlns:core="sap.ui.core">
+    <smFilterBar:SmartFilterBar id="smartFilterBar" entitySet="ScheduleWindowSet" persistencyKey="com.eldorado.sap.eblog.schedulewindow.SmartFilter"
+        smartVariant="__SVM01"  useToolbar="false">
+        <smFilterBar:controlConfiguration>
+			<smFilterBar:ControlConfiguration
+				key="IsScheduleActive" index="0" label="{/#ScheduleWindowType/IsScheduleActive/@sap:label}"
+				visibleInAdvancedArea="true">
+				<smFilterBar:customControl>
+					<MultiComboBox id="selIsScheduleActive" items="{/ActiveStatusIndicatorSet}">   <!-- customData:hasValue="true" -->
+						<core:Item key="{ActiveStatus}" text="{ActiveStatusText}"/>
+					</MultiComboBox>
+				</smFilterBar:customControl>
+			</smFilterBar:ControlConfiguration>
+			<smFilterBar:ControlConfiguration key="ScheduleWindowBeginDatetime" 
+				controlType="dateTimePicker"
+				visibleInAdvancedArea="true">
+				<smFilterBar:customControl>
+					<DateTimePicker
+						id="dpScheduleWindowBeginDatetime"
+						class="sapUiSmallMarginBottom" />	
+				</smFilterBar:customControl>
+			</smFilterBar:ControlConfiguration>
+			<smFilterBar:ControlConfiguration key="ScheduleWindowEndDatetime" 
+				controlType="dateTimePicker"
+				visibleInAdvancedArea="true">				
+				<smFilterBar:customControl>
+					<DateTimePicker
+						id="dpScheduleWindowEndDatetime"
+						class="sapUiSmallMarginBottom" />	
+				</smFilterBar:customControl>
+			</smFilterBar:ControlConfiguration>
+			<!--conditionType="{
+						module: 'sap.ui.comp.config.condition.DateRangeType',
+						ignoreTime: false,
+						defaultOperation: 'THISYEAR',
+						operations: {
+							filter: [
+								{path: 'category', contains: 'MONTH', exclude:true},
+								{path: 'category', contains: 'QUARTER', exclude:true},
+								{path: 'key', equals: 'TO', exclude:true}
+							]
+						}
+					}"-->
+		</smFilterBar:controlConfiguration>
+
+        <!-- layout data used to make the table growing but the filter bar fixed -->
+		<smFilterBar:layoutData>
+			<FlexItemData shrinkFactor="0"/>
+		</smFilterBar:layoutData>
+	</smFilterBar:SmartFilterBar>
+</core:FragmentDefinition>
