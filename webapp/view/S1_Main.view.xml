@@ -20,6 +20,13 @@
                 <f:expandedContent>
                     <Title text="{i18n>title}"/>
                 </f:expandedContent>
+                <f:actions>
+					<Button press=".onSharePress" icon="sap-icon://action">
+						<layoutData>
+							<OverflowToolbarLayoutData priority="Low" closeOverflowOnInteraction="false" />
+						</layoutData>
+					</Button>
+				</f:actions>
             </f:DynamicPageTitle>
         </f:title>
         <f:header>

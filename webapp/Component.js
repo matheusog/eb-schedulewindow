@@ -42,16 +42,16 @@ sap.ui.define([
                 
             },
 
-            /**
-             * @override
-             */
-             exit: function() {
-                if(this._oMessageProcessor) {
-                    this._oMessageProcessor.destroy(); 
-                }                    
+            // /**
+            //  * @override
+            //  */
+            //  exit: function() {
+            //     if(this._oMessageProcessor) {
+            //         this._oMessageProcessor.destroy(); 
+            //     }                    
 
-                UIComponent.prototype.exit.apply(this, arguments);			
-            },
+            //     UIComponent.prototype.exit.apply(this, arguments);			
+            // },
         
             /**
              * Setter for message handler
@@ -69,7 +69,13 @@ sap.ui.define([
                 sap.ui.getCore().attachValidationSuccess(function (oEvent) {
                     oEvent.getParameter("element").setValueState(sap.ui.core.ValueState.None);
                 });
-            }            
+            }, 
+            
+            _getURLParameters: function() {
+                let oStartupParameters = 
+                    this.getOwnerComponent().getComponentData() && this.getOwnerComponent().getComponentData().startupParameters ?                     
+                        this.getOwnerComponent().getComponentData().startupParameters : { };
+            }
         });
     }
 );

@@ -125,6 +125,13 @@
                 <Property Name="Activity" Type="Edm.String" Nullable="false" MaxLength="2" sap:label="Atividade para verificação de autorização" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
                 <Property Name="Success" Type="Edm.Boolean" Nullable="false" sap:label="Sucesso na verificação" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
             </EntityType>
+            <EntityType Name="ZshewmTipoJanelaAgend" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="ScheduleWindowType"/>
+                </Key>
+                <Property Name="ScheduleWindowType" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Tipo de Janela de Agendamento" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="ScheduleWindowTypeText" Type="Edm.String" Nullable="false" MaxLength="60" sap:label="Descrição breve" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
             <Association Name="Assoc_SchedWindow_2_Plant" sap:content-version="1">
                 <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Zle026T001w" Multiplicity="1" Role="FromRole_Assoc_SchedWindow_2_Plant"/>
                 <End Type="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ScheduleWindowType" Multiplicity="1" Role="ToRole_Assoc_SchedWindow_2_Plant"/>
@@ -157,6 +164,7 @@
                 <EntitySet Name="PlantSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Zle026T001w" sap:label="Centro VH" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="ActiveStatusIndicatorSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ZshewmAtivoInativo" sap:label="Status Ativo VH" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <EntitySet Name="AuthoritySet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.AuthorityType" sap:label="Verificação de autorização" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="ScheduleWindowTypeSet" EntityType="ZGWEWM_EBLOG_MONIT_AGEND_SRV.ZshewmTipoJanelaAgend" sap:label="Tipo de Janela de Agendamento" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
                 <AssociationSet Name="Assoc_SchedWindow_2_PlantSet" Association="ZGWEWM_EBLOG_MONIT_AGEND_SRV.Assoc_SchedWindow_2_Plant" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
                     <End EntitySet="PlantSet" Role="FromRole_Assoc_SchedWindow_2_Plant"/>
                     <End EntitySet="ScheduleWindowSet" Role="ToRole_Assoc_SchedWindow_2_Plant"/>

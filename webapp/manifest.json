@@ -19,6 +19,13 @@
           "odataVersion": "2.0"          
         }
       },
+      "interop": {
+        "uri": "/sap/opu/odata/ui2/INTEROP/",
+        "type": "OData",
+        "settings": {
+          "odataVersion": "2.0"          
+        }
+      },
       "annotations": {
         "type": "ODataAnnotation",
         "uri": "annotations/annotations.xml",
@@ -64,6 +71,15 @@
           "bundleName": "com.eldorado.sap.eblog.schedulewindow.i18n.i18n"
         }
       },
+      "GlobalContainers": {
+        "dataSource": "interop",
+        "preload": true,
+        "settings": {
+          "countMode": "Request",
+          "defaultBindingMode": "OneTime", 
+          "operationMode": "Server"
+        }
+      },
       "": {
         "dataSource": "mainService",
         "preload": true,
@@ -91,6 +107,13 @@
         {
           "name": "RouteS1_Main",
           "pattern": "",
+          "target": [
+            "TargetS1_Main"
+          ]
+        }, 
+        {
+          "name": "RouteS1_Main_State",
+          "pattern": ":?sap-iapp-state:",
           "target": [
             "TargetS1_Main"
           ]

@@ -2,6 +2,9 @@ sap.ui.define([
     "com/eldorado/sap/eblog/schedulewindow/controller/BaseController", 
     "com/eldorado/sap/eblog/schedulewindow/model/MessageHandler",
     "com/eldorado/sap/eblog/schedulewindow/model/models",  
+    "sap/ui/core/Fragment",
+    "sap/ui/generic/app/navigation/service/NavigationHandler",
+    "sap/ui/generic/app/navigation/service/NavType",
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator", 
     "sap/m/MessageBox"
@@ -10,11 +13,14 @@ sap.ui.define([
      * @param {object} BaseController
      * @param {object} MessageHandler
      * @param {object} models
+     * @param {sap.ui.core.Fragment} Fragment
+     * @param {sap.ui.generic.app.navigation.service.NavigationHandler} NavigationHandler
+     * @param {sap.ui.generic.app.navigation.service.NavType} NavType
      * @param {sap.ui.model.Filter} Filter
      * @param {sap.ui.model.FilterOperator} FilterOperator
      * @param {sap.m.MessageBox} MessageBox
      */
-    function (BaseController, MessageHandler, models, Filter, FilterOperator, MessageBox) {
+    function (BaseController, MessageHandler, models, Fragment, NavigationHandler, NavType, Filter, FilterOperator, MessageBox) {
         "use strict";
 
         return BaseController.extend("com.eldorado.sap.eblog.schedulewindow.controller.S1_Main", {
@@ -29,7 +35,19 @@ sap.ui.define([
                 this.setMessageHandler(new MessageHandler(this));
                 this.getMessageManager().registerObject(this.getView(), true);
 
-                this._oSMTable = this.getView().byId("smTable");
+                this._oSMTable  = this.getView().byId("smTable");
+                this._oSMFilter = this.getView().byId("smartFilterBar");
+
+                // create a new Application state (oAppState) for this Application instance
+                // this._oAppState = 
+                //     sap.ushell.Container
+                //         .getService("CrossApplicationNavigation")
+                //         .createEmptyAppState(this.getOwnerComponent());
+                // this._bHashChanged = false; 
+
+                // create an instance of the navigation handler
+                this._oNavigationHandler = new NavigationHandler(this);
+                this._initStateHandler();
 
                 this.setModel(
                     models.createViewModel({
@@ -45,6 +63,10 @@ sap.ui.define([
              * @override
              */
              onExit: function() {                
+                this._oSharePopover.then((oPopover) => {
+                    oPopover.destroy();
+                });
+
                 this.destroy();
             },         
 
@@ -92,18 +114,20 @@ sap.ui.define([
              */
             onBeforeRebind: function(oEvent) {
                 let mBindingParams = oEvent.getParameter("bindingParams");
-                mBindingParams.parameters["expand"] = "toSchedule,toPlant";
+                mBindingParams.parameters["expand"] = "toSchedule,toPlant,toSchedType";
 
-                let oMultiCombobox  = this.getView().byId("selIsScheduleActive");
-                let oDPSchedBegDate = this.getView().byId("dpScheduleWindowBeginDatetime");
-                let oDPSchedEndDate = this.getView().byId("dpScheduleWindowEndDatetime");
+                let oActMultiCombobox   = this.getView().byId("selIsScheduleActive");
+                let oAvailMultiCombobox = this.getView().byId("selScheduleAvail");
+                let oDPSchedBegDate     = this.getView().byId("dpScheduleWindowBeginDatetime");
+                let oDPSchedEndDate     = this.getView().byId("dpScheduleWindowEndDatetime");
 
                 let aFilters = (mBindingParams["filters"] || []);
                 aFilters.push(new Filter("IsDeleted", FilterOperator.EQ, false)); 
                 
-                if(oMultiCombobox && oMultiCombobox.getSelectedKeys()) {
+                //Status Active filter
+                if(oActMultiCombobox && oActMultiCombobox.getSelectedKeys()) {
                     let aStatusFilter = [];
-                    oMultiCombobox.getSelectedKeys().forEach((oItem) => {
+                    oActMultiCombobox.getSelectedKeys().forEach((oItem) => {
                         aStatusFilter.push(new Filter("IsScheduleActive", FilterOperator.EQ, oItem));
                     });
                     if(aStatusFilter.length > 0) {
@@ -111,6 +135,19 @@ sap.ui.define([
                     }
                 }   
                 
+                //Availability Filter
+                if(oAvailMultiCombobox && oAvailMultiCombobox.getSelectedKeys()) {
+                    let aAvailFilter = [];
+                    oAvailMultiCombobox.getSelectedKeys().forEach((oItem) => {
+                        let bResult = oItem === "true";
+                        aAvailFilter.push(new Filter("ScheduleCode", (bResult ? FilterOperator.NE : FilterOperator.EQ ), "0000000000"));
+                    });
+                    if(aAvailFilter.length > 0) {
+                        aFilters.push(new Filter({ filters: aAvailFilter, and: false })); 
+                    }
+                }   
+
+                //Begin and End Dates filters
                 let oBegDate, oEndDate;
                 if(oDPSchedBegDate && oDPSchedBegDate.getDateValue()) {
                     oBegDate = oDPSchedBegDate.getDateValue();
@@ -128,6 +165,8 @@ sap.ui.define([
                 if(oEndDate) {
                     aFilters.push(new Filter("ScheduleWindowEndDatetime", sOperator, (oBegDate || oEndDate) , oEndDate));
                 }
+
+
                 mBindingParams["filters"] = [new Filter({filters: aFilters, and: true})];
             }, 
 
@@ -185,6 +224,15 @@ sap.ui.define([
             },
 
             /**
+             * Ação de envio de emails
+             * @public
+             * @param {sap.ui.base.EventProvider} oEvent Evento do botão
+             */
+            onEmailPress: function(oEvent) {
+                sap.m.URLHelper.triggerEmail("", this.getText("commons.share.title"), window.location.href);
+            },
+
+            /**
              * Ação de inativar as janelas
              * @public
              * @param {sap.ui.base.EventProvider} oEvent Evento do botão
@@ -217,6 +265,67 @@ sap.ui.define([
             onSave: function(oEvent) {
                 this.getModel("view").setProperty("/data/editable", false);
             }, 
+
+            /**
+             * Ação de buscar dados
+             * @public
+             * @param {sap.ui.base.EventProvider} oEvent Evento do botão buscar
+             */
+            onSearch: function(oEvent) {
+                let oTable  = this._oSMTable;
+                let oFilt   = this._oSMFilter;
+            
+                let mInnerAppData = {
+                    selectionVariant: oFilt.getDataSuiteFormat(),
+                    tableVariantId: oTable.getCurrentVariantId()
+                };
+
+                // this._oAppState.setData(mInnerAppData); 
+                // this._oAppState.save();
+
+                // if(!this._bHashChanged) {
+                //     this._bHashChanged  = true;
+                //     let oHashChanger    = sap.ui.core.routing.HashChanger.getInstance();
+                //     let sOldHash        = oHashChanger.getHash();
+                //     let sNewHash        = sOldHash + "?" + "sap-iapp-state=" + this._oAppState.getKey();
+                //     oHashChanger.replaceHash(sNewHash);
+                // }
+
+                this._oNavigationHandler.storeInnerAppState(mInnerAppData);
+            },
+
+            onSharePress: function(oEvent) {
+                var oButton = oEvent.getSource(),
+				    oView   = this.getView();
+
+                // create popover
+                if (!this._oSharePopover) {
+                    if(Fragment.load) {
+                        this._oSharePopover =
+                            Fragment.load({
+                                id: oView.getId(),
+                                name: "com.eldorado.sap.eblog.schedulewindow.view.fragments.commons.SharePopover",
+                                controller: this, 
+                                type: "XML"
+                            }).then(function(oPopover) {
+                                oView.addDependent(oPopover);
+                                //oPopover.setModel("i18n", oView.getModel("i18n"));
+                                return oPopover;
+                            });
+                        } else {
+                            this._oSharePopover = new Promise((fnResolve, fnReject) => {
+                                let oPopover = sap.ui.xmlfragment(oView.getId(), "com.eldorado.sap.eblog.schedulewindow.view.fragments.commons.SharePopover", this);
+                                oView.addDependent(oPopover);
+                                //oPopover.setModel("i18n", oView.getModel("i18n"));
+                                fnResolve(oPopover);
+                            });                          
+                        }
+                            
+                } 
+                this._oSharePopover.then(function(oPopover) {
+                    oPopover.openBy(oButton);
+                });
+            },
 
             /**
              * Confirmação de alerta para o usuário
@@ -431,6 +540,67 @@ sap.ui.define([
                 }); 
             }, 
 
+            _initHashStateHandler: function() {
+                let oHashChanger    = sap.ui.core.routing.HashChanger.getInstance();
+                let sHash           = oHashChanger.getHash()
+                let sAppStateKey    = /(?:sap-iapp-state=)([^&=]+)/.exec(sHash)[1]; 
+
+                if(sAppStateKey) {
+                    sap.ushell.Container
+                        .getService("CrossApplicationNavigation")
+                        .getAppState(sAppStateKey)
+                        .done((oSavedAppState) => {
+                            let oFilt = this._oSMFilter;
+                            oFilt.setDataSuiteFormat(JSON.stringify(oSavedAppState.selectionVariant), true);
+                        });
+                }
+            },
+
+            _initStateHandler: function() {
+                let sAppStateKey    = "";
+                let sUrl            = window.location.href;
+                let iIndx           = sUrl.search('sap-iapp-state');
+
+                if (iIndx > 0) {
+                    iIndx = iIndx + 15;
+                    sAppStateKey = sUrl.substring(iIndx);
+                }
+
+                if (sAppStateKey) {
+                    let sUrl1 = "/GlobalContainers('" + sAppStateKey + "')";
+                    let oModel = this.getOwnerComponent().getModel('GlobalContainers');
+                    var functionSucess = (oData, oController) => {
+                        sap.ui.core.BusyIndicator.hide();
+                        let oFilt       = this._oSMFilter;
+                        let oTable      = this._oSMTable;
+                        if(oData.value) {
+                            let oAppState   = JSON.parse(oData.value);
+                            if(oAppState && oAppState.selectionVariant) {
+                                oFilt.setDataSuiteFormat(JSON.stringify(oAppState.selectionVariant), true);
+                            }
+                            if(oAppState && oAppState.tableVariantId) {
+                                oTable.setCurrentVariantId(oAppState.tableVariantId);
+                            } 
+                        }                       
+                    }
+
+                    var functionError = (oError) => {
+                        sap.ui.core.BusyIndicator.hide();
+                    }
+
+                    sap.ui.core.BusyIndicator.show();
+                    let oParams = {
+                        success: function(oData, oController) {
+                            functionSucess(oData, oController);
+                        },
+                        error: function(oError) {
+                            functionError(oError);
+                        }
+                    };
+
+                    oModel.read(sUrl1, oParams);
+                }
+            }
 
             // onTogglePress: function(oEvent) {
             //      let bEditable = this._oSMTable.getEditable();

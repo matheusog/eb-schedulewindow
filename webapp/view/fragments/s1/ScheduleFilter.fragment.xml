@@ -3,10 +3,10 @@
     xmlns:smFilterBar="sap.ui.comp.smartfilterbar"
     xmlns:core="sap.ui.core">
     <smFilterBar:SmartFilterBar id="smartFilterBar" entitySet="ScheduleWindowSet" persistencyKey="com.eldorado.sap.eblog.schedulewindow.SmartFilter"
-        smartVariant="__SVM01"  useToolbar="false">
+        smartVariant="__SVM01"  useToolbar="false" search=".onSearch">
         <smFilterBar:controlConfiguration>
 			<smFilterBar:ControlConfiguration
-				key="IsScheduleActive" index="0" label="{/#ScheduleWindowType/IsScheduleActive/@sap:label}"
+				key="IsScheduleActive" label="{/#ScheduleWindowType/IsScheduleActive/@sap:label}"
 				visibleInAdvancedArea="true">
 				<smFilterBar:customControl>
 					<MultiComboBox id="selIsScheduleActive" items="{/ActiveStatusIndicatorSet}">   <!-- customData:hasValue="true" -->
@@ -30,6 +30,22 @@
 					<DateTimePicker
 						id="dpScheduleWindowEndDatetime"
 						class="sapUiSmallMarginBottom" />	
+				</smFilterBar:customControl>
+			</smFilterBar:ControlConfiguration>
+			<smFilterBar:ControlConfiguration key="ScheduleAvailability" label="{/#ZshewmGradeAgendamento/ScheduleAvailStatus/@sap:label}"				
+				visibleInAdvancedArea="true">				
+				<smFilterBar:customControl>
+					<MultiComboBox id="selScheduleAvail" items="{/ScheduleAvailabilitySet}"> 
+						<core:Item key="{ScheduleAvailStatus}" text="{ScheduleAvailStatusText}"/>
+					</MultiComboBox>
+				</smFilterBar:customControl>
+			</smFilterBar:ControlConfiguration>
+			<smFilterBar:ControlConfiguration key="toSchedule/SchedulingStatus" label="{/#ZshewmMomentoInsp/InspectionTime/@sap:label}"				
+				visibleInAdvancedArea="true">				
+				<smFilterBar:customControl>
+					<MultiComboBox id="selSchedulingStatus" items="{ path: '/InspectionTimeSet', sorter: { path: 'InspectionTime', descending: false } }"> 
+						<core:Item key="{InspectionTime}" text="{InspectionTime} - {InspectionTimeText}"/>
+					</MultiComboBox>
 				</smFilterBar:customControl>
 			</smFilterBar:ControlConfiguration>
 			<!--conditionType="{
