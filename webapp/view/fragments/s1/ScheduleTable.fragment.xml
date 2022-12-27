@@ -10,8 +10,8 @@
 		useVariantManagement="true" useTablePersonalisation="true" header="{i18n>s1.table.title}"
 		showRowCount="true" persistencyKey="com.eldorado.sap.eblog.schedulewindow.SmartTable" enableAutoBinding="true"
 		demandPopin="true"  smartVariant="__SVM01" editable="{view>/data/editable}"
-        requestAtLeastFields="Plant,ScheduleWindowGuid,ScheduleWindowTp,IsScheduleActive,IsDeleted"
-        beforeRebindTable=".onBeforeRebind" >   
+        requestAtLeastFields="Plant,ScheduleWindowGuid,ScheduleWindowTp,IsScheduleActive,IsDeleted,UX_FC_Default"
+        beforeRebindTable=".onBeforeRebind" >
             <!-- app:useSmartField="true" -->
             <!-- editToggled=".onTogglePress" editTogglable="true" app:useSmartToggle="true" -->
         <smTable:layoutData>
@@ -26,7 +26,7 @@
                 <ToolbarSpacer />
                 <!--<Button tooltip="{= ${view>/data/editable} ? ${i18n>s1.table.button.display} : ${i18n>s1.table.button.edit} }" 
                         icon="{= ${view>/data/editable} ? 'sap-icon://display' : 'sap-icon://edit' }" />-->                
-                <Button tooltip="{i18n>s1.table.button.edit}" icon="sap-icon://edit" visible="{= ${view>/data/editable}  &amp;&amp; ${authority>/02} }" 
+                <Button tooltip="{i18n>s1.table.button.edit}" icon="sap-icon://edit" visible="{= !${view>/data/editable}  &amp;&amp; ${authority>/02} }" 
                     press=".onEdit" />
                 <Button text="{i18n>s1.table.button.save}" icon="sap-icon://save" visible="{view>/data/editable}"
                     press=".onSave" />
@@ -72,13 +72,32 @@
                         <Text text="{/#SchedulingType/ShippingParty/@sap:label}" />
                 </Column>
                 -->
+                <Column>
+                    <customData>
+                        <core:CustomData key="p13nData" 
+                            value='\{ "columnKey": "ScheduleCode", "autoColumnWidth": \{ "visibleProperty": "ScheduleCode" }, "columnIndex": 4, 
+                      "leadingProperty": "ScheduleCode", "sortProperty": "ScheduleCode", "additionalProperty": "", 
+                      "description": "", "displayBehaviour": "idOnly" }' />
+                        </customData>
+                        <Text text="{/#ScheduleWindowType/ScheduleCode/@sap:label}" />
+                </Column>
+                <Column>
+                    <customData>
+                        <core:CustomData key="p13nData" 
+                            value='\{ "columnKey": "FiscalYear", "autoColumnWidth": \{ "visibleProperty": "FiscalYear" }, "columnIndex": 5, 
+                      "leadingProperty": "FiscalYear", "sortProperty": "FiscalYear", "additionalProperty": "", 
+                      "description": "", "displayBehaviour": "idOnly" }' />
+                        </customData>
+                        <Text text="{/#ScheduleWindowType/FiscalYear/@sap:label}" />
+                </Column>
             </columns>
             <items>
                 <ColumnListItem
-                    vAlign="Inherit"
-                >
+                    vAlign="Inherit" >
                     <!--<Text text="{ScheduleWindowGuid}"/>-->
                     <!--<Text text="{toSchedule/ShippingParty}"/>-->
+                    <Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="10" type="Number" value="{ScheduleCode}" />
+                    <Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="4" type="Number" value="{FiscalYear}" />
                 </ColumnListItem>
             </items>
         </Table>

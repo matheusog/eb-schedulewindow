@@ -2,7 +2,7 @@
 	<Popover showHeader="false" placement="Bottom" >
 		<VBox class="sapMPopoverCont">
 			<Button text="{i18n>commons.share.btn.email}" press=".onEmailPress" iconFirst="true" icon="sap-icon://email" width="100%" />
-            <!--@ui5-ignore-->
+            <!-- @ui5ignore -->
 			<foot:AddBookmarkButton id="book" text="{i18n>commons.share.btn.tile}" title="{i18n>commons.share.title}" showGroupSelection="true" />
 		</VBox>
 	</Popover>

@@ -83,7 +83,12 @@
       "": {
         "dataSource": "mainService",
         "preload": true,
-        "settings": {}
+        "settings": {
+          "countMode": "Request",
+          "defaultBindingMode": "TwoWay",
+          "defaultUpdateMethod": "Put",
+          "operationMode": "Server"
+        }
       }
     },
     "resources": {

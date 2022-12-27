@@ -63,10 +63,11 @@ sap.ui.define([
              * @override
              */
              onExit: function() {                
-                this._oSharePopover.then((oPopover) => {
-                    oPopover.destroy();
-                });
-
+                if(this._oSharePopover) {
+                    this._oSharePopover.then((oPopover) => {
+                        oPopover.destroy();
+                    });
+                }
                 this.destroy();
             },         
 
@@ -221,6 +222,13 @@ sap.ui.define([
              */
             onEdit: function(oEvent) {
                 this.getModel("view").setProperty("/data/editable", true);
+                /*
+                let aKeys = Object.getOwnPropertyNames(this.getModel().getObject("/"))
+                    	        .filter((oItem) => oItem.startsWith("ScheduleWindowSet"));
+                aKeys.forEach((sKey) => {
+                  this.getModel().setProperty("/".concat(sKey, "/UX_FC_Default"), 3); 
+                });
+                */
             },
 
             /**
@@ -263,7 +271,29 @@ sap.ui.define([
              * @param {sap.ui.base.EventProvider} oEvent Evento do botão
              */
             onSave: function(oEvent) {
-                this.getModel("view").setProperty("/data/editable", false);
+                this.getModel("view").setProperty("/state/busy", true);
+                this._doSave().then((oProcessing) => {
+                    let aMessages = oProcessing ? (oProcessing.messages||undefined) : []; 
+                    let bSuccess = oProcessing ? (oProcessing.success||false) : true; 
+                    if(!aMessages) { aMessages = [] }
+                    if(bSuccess) { 
+                        this.getModel("view").setProperty("/data/editable", false);
+                        aMessages.push( aMessages.length > 0 ? 
+                            { Type: "I", Message: this.getText("message.save_processed_alert") } :
+                            { Type: "S", Message: this.getText("message.save_processed") }); 
+                    };
+                    this._displayMessages(aMessages, true, null, null);
+                })
+                .catch((oError) => {
+                    if(oError) {
+                        let aMessages = this._mapOdataException2Message(oError);                
+                        this._displayMessages(aMessages, false, null);
+                    }
+                })
+                .finally(() => {
+                    this.getModel("view").setProperty("/state/busy", false);
+                });
+                
             }, 
 
             /**
@@ -294,6 +324,11 @@ sap.ui.define([
                 this._oNavigationHandler.storeInnerAppState(mInnerAppData);
             },
 
+            /**
+             * Ação de compartilhar link do aplicativo (por e-mail ou via launchpad). 
+             * @public
+             * @param {sap.ui.base.EventProvider} oEvent Evento do botão compartilhar
+             */
             onSharePress: function(oEvent) {
                 var oButton = oEvent.getSource(),
 				    oView   = this.getView();
@@ -522,6 +557,38 @@ sap.ui.define([
             _doSave: function() {   
                 return new Promise((fnResolve, fnReject) => {
                     let oModel = this.getModel();
+                    if(!oModel.hasPendingChanges()) {
+                        fnResolve();
+                        return;
+                    }
+                    oModel.submitChanges({
+                        success: (oResponse) => {
+                            let aMessages = [];
+                            let bSuccess = false;
+                            if(oResponse && oResponse.__batchResponses) {                                
+                                let aResps = (oResponse.__batchResponses
+                                    .filter((oItem) => oItem.hasOwnProperty("__changeResponses"))||[{"__changeResponses": [oResponse.__batchResponses[0]]}]); 
+                                let oResps; 
+                                if(aResps && aResps.length > 0) {
+                                    oResps = aResps[0].__changeResponses;
+                                } else {
+                                    oResps = [];
+                                    oResps.push(oResponse.__batchResponses[0]);
+                                }
+                                oResps.forEach((oItem) => {
+                                    if(oItem.headers["sap-message"]) {
+                                        let oMessage = JSON.parse(oItem.headers["sap-message"]); 
+                                        aMessages = aMessages.concat(this._mapOdataException2Message(oMessage)); 
+                                    } else {
+                                        bSuccess = true; 
+                                    }
+                                        
+                                });
+                            }
+                            fnResolve({ "messages": aMessages, "success": bSuccess });
+                        },
+                        error: fnReject.bind(this)
+                    });
                 });
             },
 
