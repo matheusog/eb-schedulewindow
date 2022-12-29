@@ -1,0 +1,25 @@
+<core:FragmentDefinition
+	xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:smTable="sap.ui.comp.smarttable">
+    <Dialog xmlns="sap.m" 
+        busy="{__notafiscal>/busy}"
+        busyIndicatorDelay="{__notafiscal>/delay}"
+        stretch="{= ${device>/system/phone} }"
+        title="{i18n>dialog.notafiscal.title}" class="sapUiResponsiveContentPadding">
+        <content>
+            <!-- @ui5ignore -->
+            <smTable:SmartTable class="sapUiResponsiveContentPadding" id="smTableNF"
+                entitySet="SchedulingItemSet" tableType="ResponsiveTable" header=""
+                useVariantManagement="false" useTablePersonalisation="false" useExportToExcel="false" 
+                showRowCount="true" enableAutoBinding="false" demandPopin="true"  editable="false"
+                beforeRebindTable=".onBeforeRebind" />
+        </content>
+        <buttons>         
+            <!-- @ui5ignore -->
+            <!--<Button text="{i18n>dialog.notafiscal.button.confirm}" press=".onConfirm" />-->
+            <!-- @ui5ignore -->
+            <Button text="{i18n>dialog.notafiscal.button.cancel}" press=".onClose" /> <!-- type="Reject" -->
+        </buttons>
+    </Dialog>
+</core:FragmentDefinition>

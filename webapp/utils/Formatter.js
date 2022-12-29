@@ -28,6 +28,19 @@ sap.ui.define([
 					break;
 			}
 			return sMsgType;
-        }
+        }, 
+
+		/**
+		 * Returns formatted NF
+		 *
+		 * @public
+		 * @param {string} sNFNumber NF Number
+		 * @param {string} sSeries NF Series
+		 * @returns {sap.ui.core.MessageType} Formatted NF
+		 */
+		formatNF: function(sNFNumber, sSeries) {
+			return !sNFNumber ? "" : !sSeries ? sNFNumber : 
+				`${sNFNumber}-${sSeries}`; 
+		}
 	};
 });

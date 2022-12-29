@@ -1,5 +1,6 @@
 <core:FragmentDefinition 
     xmlns:smTable="sap.ui.comp.smarttable"
+    xmlns:smField="sap.ui.comp.smartfield"
     xmlns:core="sap.ui.core"
     xmlns:app="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
     xmlns="sap.m">    
@@ -10,7 +11,7 @@
 		useVariantManagement="true" useTablePersonalisation="true" header="{i18n>s1.table.title}"
 		showRowCount="true" persistencyKey="com.eldorado.sap.eblog.schedulewindow.SmartTable" enableAutoBinding="true"
 		demandPopin="true"  smartVariant="__SVM01" editable="{view>/data/editable}"
-        requestAtLeastFields="Plant,ScheduleWindowGuid,ScheduleWindowTp,IsScheduleActive,IsDeleted,UX_FC_Default"
+        requestAtLeastFields="Plant,ScheduleWindowGuid,ScheduleWindowTp,IsScheduleActive,IsDeleted,UX_FC_Default,EtagToken"
         beforeRebindTable=".onBeforeRebind" >
             <!-- app:useSmartField="true" -->
             <!-- editToggled=".onTogglePress" editTogglable="true" app:useSmartToggle="true" -->
@@ -90,14 +91,37 @@
                         </customData>
                         <Text text="{/#ScheduleWindowType/FiscalYear/@sap:label}" />
                 </Column>
+                <Column>
+                    <customData>
+                        <core:CustomData key="p13nData" 
+                            value='\{ "columnKey": "toSchedule/NFNumber", "autoColumnWidth": \{ "visibleProperty": "toSchedule/NFNumber" }, "columnIndex": 15, 
+                      "leadingProperty": "toSchedule/NFNumber", "sortProperty": "toSchedule/NFNumber", "additionalProperty": "toSchedule/NFSeries", 
+                      "description": "", "displayBehaviour": "idOnly" }' />
+                    </customData>
+                    <Text text="{/#SchedulingType/NFNumber/@sap:label}" />
+                </Column>
             </columns>
             <items>
                 <ColumnListItem
                     vAlign="Inherit" >
                     <!--<Text text="{ScheduleWindowGuid}"/>-->
                     <!--<Text text="{toSchedule/ShippingParty}"/>-->
-                    <Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="10" type="Number" value="{ScheduleCode}" />
-                    <Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="4" type="Number" value="{FiscalYear}" />
+                    <!--<Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="10" type="Number" value="{ScheduleCode}" />
+                    <Input editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}" maxLength="4" type="Number" value="{FiscalYear}" />--> 
+                    <smField:SmartField
+                        editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}"
+                        entitySet="ScheduleWindowSet"
+                        maxLength="10"
+                        value="{ScheduleCode}" />
+                    <smField:SmartField
+                        editable="{= ${view>/data/editable} &amp;&amp; ${IsScheduleActive}}"
+                        entitySet="ScheduleWindowSet"
+                        maxLength="4"
+                        value="{FiscalYear}" />
+                    <Link
+                        text="{ parts: [{path: 'toSchedule/NFNumber'}, {path: 'toSchedule/NFSeries'}], formatter: '._oFormmater.formatNF' }"
+                        press=".onNFPress" />
+                        
                 </ColumnListItem>
             </items>
         </Table>

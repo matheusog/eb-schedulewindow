@@ -1,7 +1,8 @@
 sap.ui.define([
     "com/eldorado/sap/eblog/schedulewindow/controller/BaseController", 
     "com/eldorado/sap/eblog/schedulewindow/model/MessageHandler",
-    "com/eldorado/sap/eblog/schedulewindow/model/models",  
+    "com/eldorado/sap/eblog/schedulewindow/model/NotaFiscalPopUp",
+    "com/eldorado/sap/eblog/schedulewindow/model/models", 
     "sap/ui/core/Fragment",
     "sap/ui/generic/app/navigation/service/NavigationHandler",
     "sap/ui/generic/app/navigation/service/NavType",
@@ -12,6 +13,7 @@ sap.ui.define([
     /**
      * @param {object} BaseController
      * @param {object} MessageHandler
+     * @param {object} NotaFiscalPopUp
      * @param {object} models
      * @param {sap.ui.core.Fragment} Fragment
      * @param {sap.ui.generic.app.navigation.service.NavigationHandler} NavigationHandler
@@ -20,7 +22,7 @@ sap.ui.define([
      * @param {sap.ui.model.FilterOperator} FilterOperator
      * @param {sap.m.MessageBox} MessageBox
      */
-    function (BaseController, MessageHandler, models, Fragment, NavigationHandler, NavType, Filter, FilterOperator, MessageBox) {
+    function (BaseController, MessageHandler, NotaFiscalPopUp, models, Fragment, NavigationHandler, NavType, Filter, FilterOperator, MessageBox) {
         "use strict";
 
         return BaseController.extend("com.eldorado.sap.eblog.schedulewindow.controller.S1_Main", {
@@ -31,7 +33,7 @@ sap.ui.define([
              */
             onInit: function () {
                 this.setModel(models.createViewModel({}), "view");
-
+                
                 this.setMessageHandler(new MessageHandler(this));
                 this.getMessageManager().registerObject(this.getView(), true);
 
@@ -55,6 +57,8 @@ sap.ui.define([
                             "editable": false
                         }
                     }), "view");
+
+                this._oNotaFiscalPopUp = new NotaFiscalPopUp(this.getModel(), this); 
             },
 
             /**
@@ -68,6 +72,11 @@ sap.ui.define([
                         oPopover.destroy();
                     });
                 }
+
+                if(this._oNotaFiscalPopUp) {
+                    this._oNotaFiscalPopUp.destroy();
+                }
+
                 this.destroy();
             },         
 
@@ -92,9 +101,15 @@ sap.ui.define([
                 this.getModel("view").setProperty("/state/busy", true);
                 this._getSelectedItems()
                     .then(this._doActiveInactivate.bind(this, true))
-                    .then((aMessages) => {
+                    .then((oProcessing) => {
+                        let aMessages = oProcessing ? (oProcessing.messages||undefined) : []; 
+                        let bSuccess = oProcessing ? (oProcessing.success||false) : true; 
                         if(!aMessages) { aMessages = [] }
-                        aMessages.push({ Type: "S", Message: this.getText("message.activation_processed") });
+                        if(bSuccess) { 
+                            aMessages.push( aMessages.length > 0 ? 
+                                { Type: "I", Message: this.getText("message.activation_processed_alert") } :
+                                { Type: "S", Message: this.getText("message.activation_processed") }); 
+                        };
                         this._displayMessages(aMessages, true, null, null);
                     })
                     .catch((oError) => {
@@ -199,9 +214,15 @@ sap.ui.define([
                 this.getModel("view").setProperty("/state/busy", true);
                 this._getSelectedItems()
                     .then(this._doDelete.bind(this))
-                    .then((aMessages) => {
+                    .then((oProcessing) => {
+                        let aMessages = oProcessing ? (oProcessing.messages||undefined) : []; 
+                        let bSuccess = oProcessing ? (oProcessing.success||false) : true; 
                         if(!aMessages) { aMessages = [] }
-                        aMessages.push({ Type: "S", Message: this.getText("message.deletion_processed") });
+                        if(bSuccess) { 
+                            aMessages.push( aMessages.length > 0 ? 
+                                { Type: "I", Message: this.getText("message.deletion_processed_alert") } :
+                                { Type: "S", Message: this.getText("message.deletion_processed") }); 
+                        };
                         this._displayMessages(aMessages, true, null, null);
                     })
                     .catch((oError) => {
@@ -249,9 +270,15 @@ sap.ui.define([
                 this.getModel("view").setProperty("/state/busy", true);
                 this._getSelectedItems()
                     .then(this._doActiveInactivate.bind(this, false))
-                    .then((aMessages) => {
+                    .then((oProcessing) => {
+                        let aMessages = oProcessing ? (oProcessing.messages||undefined) : []; 
+                        let bSuccess = oProcessing ? (oProcessing.success||false) : true; 
                         if(!aMessages) { aMessages = [] }
-                        aMessages.push({ Type: "S", Message: this.getText("message.inactivation_processed") });
+                        if(bSuccess) { 
+                            aMessages.push( aMessages.length > 0 ? 
+                                { Type: "I", Message: this.getText("message.inactivation_processed_alert") } :
+                                { Type: "S", Message: this.getText("message.inactivation_processed") }); 
+                        };
                         this._displayMessages(aMessages, true, null, null);
                     })
                     .catch((oError) => {
@@ -263,6 +290,22 @@ sap.ui.define([
                     .finally(() => {
                         this.getModel("view").setProperty("/state/busy", false);
                     });                    
+            },
+
+            /**
+             * Ação de abrir detalhes de nota fiscal
+             * @public
+             * @param {sap.ui.base.EventProvider} oEvent Evento do botão
+             */
+            onNFPress: function(oEvent) {
+                let oContext = oEvent.getSource().getBindingContext(); 
+                let oObject = oContext.getObject();
+                let oFilters = new Filter({filters: [
+                        new Filter("Scheduling", FilterOperator.EQ, oObject.ScheduleCode), 
+                        new Filter("FiscalYear", FilterOperator.EQ, oObject.FiscalYear)
+                    ], and: true}); 
+                this._oNotaFiscalPopUp.getDialog(oFilters)
+                    .then((oFrag) => { oFrag.open(); }); 
             },
 
             /**
@@ -413,7 +456,9 @@ sap.ui.define([
                             let oObject = oContext.getObject();
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                         "ScheduleWindowGuid": oObject.ScheduleWindowGuid, "ActivationStatus": bActivate };
-                            this._doFunctionCall("/ActivationChange", "POST", oParams, "toSchedule,toPlant");
+                            let sETag = "";
+                                //this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                            this._doFunctionCall("/ActivationChange", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
                                 // }).catch((oError) => {
@@ -425,12 +470,31 @@ sap.ui.define([
                         this.getModel().attachEventOnce("batchRequestCompleted", (oResponse) => {                        
                             let iHttpStatusCode = oResponse.getParameter("response").statusCode; 
                             if(iHttpStatusCode === 202) {
-                                fnResolve();
+                                let aMessages = [];
+                                let bSuccess = false;
+                                if(oResponse && oResponse.getParameter("requests")) {                                
+                                    let aReqs = oResponse.getParameter("requests").filter((oItem) => oItem.method === "POST");
+                                        //oItem.hasOwnProperty("__changeResponses"))||[{"__changeResponses": [oResponse.__batchResponses[0]]}]); 
+                                    let aResps = aReqs.map((oItem) => oItem.response); 
+                                    aResps.forEach((oItem) => {
+                                        if(oItem.headers["sap-message"]) {
+                                            let oMessage = JSON.parse(oItem.headers["sap-message"]); 
+                                            aMessages = aMessages.concat(this._mapOdataException2Message(oMessage)); 
+                                        } else if(oItem.statusCode === "202" || oItem.statusCode === "201" || oItem.statusCode === "200") {
+                                            bSuccess = true; 
+                                        } else {
+                                            aMessages = aMessages.concat(this._mapOdataException2Message(oItem));
+                                        }
+                                            
+                                    });
+                                }
+                                fnResolve({ "messages": aMessages, "success": bSuccess });
+
                             } else {
                                 fnReject(oResponse);
                             }
                             
-                        });
+                        }); 
                     };
 
                     if(aContexts.length === aItems.length) {
@@ -489,7 +553,9 @@ sap.ui.define([
                             let oObject = oContext.getObject();
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                            "ScheduleWindowGuid": oObject.ScheduleWindowGuid };
-                            this._doFunctionCall("/DeleteScheduleWindow", "POST", oParams, "toSchedule,toPlant");
+                            let sETag = "";
+                              //this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                            this._doFunctionCall("/DeleteScheduleWindow", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
                                 // }).catch((oError) => {
@@ -501,7 +567,26 @@ sap.ui.define([
                         this.getModel().attachEventOnce("batchRequestCompleted", (oResponse) => {                        
                             let iHttpStatusCode = oResponse.getParameter("response").statusCode; 
                             if(iHttpStatusCode === 202) {
-                                fnResolve();
+                                let aMessages = [];
+                                let bSuccess = false;
+                                if(oResponse && oResponse.getParameter("requests")) {                                
+                                    let aReqs = oResponse.getParameter("requests").filter((oItem) => oItem.method === "POST");
+                                        //oItem.hasOwnProperty("__changeResponses"))||[{"__changeResponses": [oResponse.__batchResponses[0]]}]); 
+                                    let aResps = aReqs.map((oItem) => oItem.response); 
+                                    aResps.forEach((oItem) => {
+                                        if(oItem.headers["sap-message"]) {
+                                            let oMessage = JSON.parse(oItem.headers["sap-message"]); 
+                                            aMessages = aMessages.concat(this._mapOdataException2Message(oMessage)); 
+                                        } else if(oItem.statusCode === "202" || oItem.statusCode === "201" || oItem.statusCode === "200") {
+                                            bSuccess = true; 
+                                        } else {
+                                            aMessages = aMessages.concat(this._mapOdataException2Message(oItem));
+                                        }
+                                            
+                                    });
+                                }
+                                fnResolve({ "messages": aMessages, "success": bSuccess });
+
                             } else {
                                 fnReject(oResponse);
                             }
@@ -536,10 +621,11 @@ sap.ui.define([
              * @private
              * @returns {Promise} Return Promise for OData read
              */
-            _doFunctionCall: function(sFunction, sMethod, oParams, sExpand) {
+            _doFunctionCall: function(sFunction, sMethod, oParams, eTag, sExpand) {
                 return new Promise((fnResolve, fnReject) => {
                     this.getModel().callFunction(sFunction, {   // function import name
                         method: sMethod,                        // http method
+                        eTag: eTag,
                         urlParameters: oParams,                 // function import parameters        
                         expand: sExpand,
                         success: fnResolve, 
