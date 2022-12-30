@@ -456,8 +456,8 @@ sap.ui.define([
                             let oObject = oContext.getObject();
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                         "ScheduleWindowGuid": oObject.ScheduleWindowGuid, "ActivationStatus": bActivate };
-                            let sETag = "";
-                                //this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                            let sETag = 
+                                this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
                             this._doFunctionCall("/ActivationChange", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
@@ -491,7 +491,7 @@ sap.ui.define([
                                 fnResolve({ "messages": aMessages, "success": bSuccess });
 
                             } else {
-                                fnReject(oResponse);
+                                fnReject(oResponse.getParameter("response"));
                             }
                             
                         }); 
@@ -553,8 +553,8 @@ sap.ui.define([
                             let oObject = oContext.getObject();
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                            "ScheduleWindowGuid": oObject.ScheduleWindowGuid };
-                            let sETag = "";
-                              //this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                            let sETag = //"";
+                              this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
                             this._doFunctionCall("/DeleteScheduleWindow", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
@@ -588,7 +588,7 @@ sap.ui.define([
                                 fnResolve({ "messages": aMessages, "success": bSuccess });
 
                             } else {
-                                fnReject(oResponse);
+                                fnReject(oResponse.getParameter("response"));
                             }
                             
                         }); 
@@ -621,11 +621,14 @@ sap.ui.define([
              * @private
              * @returns {Promise} Return Promise for OData read
              */
-            _doFunctionCall: function(sFunction, sMethod, oParams, eTag, sExpand) {
+            _doFunctionCall: function(sFunction, sMethod, oParams, sETag, sExpand) {
                 return new Promise((fnResolve, fnReject) => {
                     this.getModel().callFunction(sFunction, {   // function import name
                         method: sMethod,                        // http method
-                        eTag: eTag,
+                        //eTag: sETag,
+                        headers: {
+                          "zif-match": sETag
+                        },
                         urlParameters: oParams,                 // function import parameters        
                         expand: sExpand,
                         success: fnResolve, 
