@@ -50,6 +50,8 @@ sap.ui.define([
             //         this._oMessageProcessor.destroy(); 
             //     }                    
 
+            //     this.destroy();
+
             //     UIComponent.prototype.exit.apply(this, arguments);			
             // },
         
@@ -69,12 +71,6 @@ sap.ui.define([
                 sap.ui.getCore().attachValidationSuccess(function (oEvent) {
                     oEvent.getParameter("element").setValueState(sap.ui.core.ValueState.None);
                 });
-            }, 
-            
-            _getURLParameters: function() {
-                let oStartupParameters = 
-                    this.getOwnerComponent().getComponentData() && this.getOwnerComponent().getComponentData().startupParameters ?                     
-                        this.getOwnerComponent().getComponentData().startupParameters : { };
             }
         });
     }

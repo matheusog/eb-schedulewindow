@@ -39,6 +39,7 @@ sap.ui.define([
 
                 this._oSMTable  = this.getView().byId("smTable");
                 this._oSMFilter = this.getView().byId("smartFilterBar");
+                this._getURLParameters();
 
                 // create a new Application state (oAppState) for this Application instance
                 // this._oAppState = 
@@ -694,6 +695,103 @@ sap.ui.define([
                     } else { fnResolve(aItems); }
                     
                 }); 
+            }, 
+            
+            /**
+             * Retornar os parametros de URL
+             * @private
+             * @returns {Array} Parameters on URL
+             */
+            _getURLParameters: function() {
+                let oStartupParameters = 
+                    this.getOwnerComponent().getComponentData() && this.getOwnerComponent().getComponentData().startupParameters ?                     
+                        this.getOwnerComponent().getComponentData().startupParameters : {};
+                
+                let aProperties = Object.getOwnPropertyNames(oStartupParameters);
+                aProperties = aProperties.filter((sProp) => sProp === "Plant" ||
+                                                            sProp === "ScheduleWindowTp" ||
+                                                            sProp === "ScheduleDate" ||
+                                                            sProp === "ScheduleWindowBeginDatetime" ||
+                                                            sProp === "ScheduleWindowEndDatetime" ||
+                                                            sProp === "AvailMultiCombobox" ||
+                                                            sProp === "ActMultiCombobox" );
+                if(!aProperties || !aProperties.length === 0) {
+                    return; 
+                }
+
+                let oActMultiCombobox   = this.getView().byId("selIsScheduleActive");
+                let oAvailMultiCombobox = this.getView().byId("selScheduleAvail");
+                let oDPSchedBegDate     = this.getView().byId("dpScheduleWindowBeginDatetime");
+                let oDPSchedEndDate     = this.getView().byId("dpScheduleWindowEndDatetime");
+
+                var oFilterData = {};
+                aProperties.forEach((sProp) => {
+                    var aRanges = [];
+                    switch(sProp) {
+                        case "ScheduleDate": 
+                        case "ScheduleWindowBeginDatetime":
+                        case "ScheduleWindowEndDatetime":
+                            let oBegDate = null, oEndDate = null;
+                            if(sProp === "ScheduleDate") {
+                                let oFormatOptions = { "pattern": "yyyy-MM-ddTHH:mm:ss.SSS", "UTC": false, "strictParsing": false };
+                                let oDateInstance = sap.ui.core.format.DateFormat.getDateInstance(oFormatOptions, null);
+                                oBegDate = oDateInstance.parse(oStartupParameters[sProp][0].substring(0,23));
+                                oEndDate = oDateInstance.parse(oStartupParameters[sProp][0].substring(0,11).concat("23:59:59.000"));
+                            } else {
+                                if(sProp === "ScheduleWindowBeginDatetime") {
+                                    oBegDate = new Date(oStartupParameters[sProp][0]);
+                                }
+                                if(sProp === "ScheduleWindowEndDatetime") {
+                                    oEndDate = new Date(oStartupParameters[sProp][0]);
+                                }
+                            }
+                            if(oBegDate) {
+                                oDPSchedBegDate.setDateValue(oBegDate);
+                            }
+                            if(oEndDate) {
+                                oDPSchedEndDate.setDateValue(oEndDate);
+                            }
+                            break;
+                        case "AvailMultiCombobox": 
+                            oStartupParameters[sProp].forEach((sValue) => { 
+                                if(sValue) {
+                                    aRanges.push(sValue);
+                                }     
+                            });    
+                            oAvailMultiCombobox.setSelectedKeys(aRanges);
+                            break;
+                        case "ActMultiCombobox": 
+                            oStartupParameters[sProp].forEach((sValue) => { 
+                                if(sValue) {
+                                    aRanges.push(sValue);
+                                }   
+                            });
+                            oActMultiCombobox.setSelectedKeys(aRanges);
+                            break;
+                        default: 
+                            oStartupParameters[sProp].forEach((sValue) => { 
+                                aRanges.push({
+                                    "exclude": false,
+                                    "operation": FilterOperator.EQ,
+                                    "keyField": sProp,
+                                    "value1": sValue,
+                                    "value2": null
+                                });
+                            });
+                            oFilterData[sProp] = {
+                                items: [],
+                                ranges: aRanges,
+                                value: null
+                            };
+                            break;
+                    }
+                });
+                this._oSMFilter.attachInitialized((oEvent) => {
+                    if(oFilterData) {
+                        this._oSMFilter.setFilterData(oFilterData);
+                        oFilterData = undefined;
+                    }
+                });
             }, 
 
             _initHashStateHandler: function() {

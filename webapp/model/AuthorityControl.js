@@ -43,7 +43,7 @@ sap.ui.define([
         }
 
         return {
-            _initAuthority: _fnInitAuthority.bind(mInstance)
+            _initAuthority: _fnInitAuthority
         };
     }
 
@@ -56,7 +56,7 @@ sap.ui.define([
          * @returns {sap.ui.base.ManagedObject}
          */
         constructor: function(oModel) {
-            ManagedObject.prototype.constructor.apply(this, arguments);
+            //ManagedObject.prototype.constructor.apply(this, arguments);
             mInstance = $.extend(this, getMethods());
             
             mModel = oModel;

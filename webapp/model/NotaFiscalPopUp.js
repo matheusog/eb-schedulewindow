@@ -132,24 +132,26 @@ sap.ui.define([
                 
             }
 
-            ManagedObject.prototype.destroy.apply(this, arguments);
+            //mInstance.destroy();
+            ManagedObject.prototype.destroy.apply(mInstance, arguments);
+            mInstance = undefined;
         }
 
         return {
-            _getDialog: _fnGetDialog.bind(mInstance), 
-            _destroy: _fnDestroy.bind(mInstance)
+            _getDialog: _fnGetDialog, 
+            _destroy: _fnDestroy
         };
     }
 
 	return ManagedObject.extend("com.eldorado.sap.eblog.schedulewindow.model.NotaFiscalPopUp", {        
-
+        
         /**
          * @override
          * @param {any} oModel OData Model to authority check
          * @returns {sap.ui.base.ManagedObject}
          */
         constructor: function(oModel, oController) {
-            ManagedObject.prototype.constructor.apply(this, arguments);
+            //ManagedObject.prototype.constructor.apply(this, arguments);
             mInstance = $.extend(this, getMethods(oController));
             
             mModel = oModel;

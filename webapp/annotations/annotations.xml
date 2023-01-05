@@ -113,7 +113,7 @@
                         <PropertyPath>ScheduleWindowEndDatetime</PropertyPath>
                         <PropertyPath>Plant</PropertyPath>
                         <PropertyPath>ScheduleWindowTp</PropertyPath>
-                        <PropertyPath>toSchedule/SchedulingStatus</PropertyPath>
+                        <!--<PropertyPath>toSchedule/SchedulingStatus</PropertyPath>-->
                     </Collection>
                 </Annotation>            
             </Annotations>

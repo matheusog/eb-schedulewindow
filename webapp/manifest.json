@@ -33,6 +33,21 @@
             "localUri": "annotations/annotations.xml"
         }
       }
+    }, 
+    "crossNavigation": {
+      "inbounds": {
+          "com-eldorado-sap-eblog-schedulewindow-inbound": {
+              "signature": {
+                  "parameters": {},
+                  "additionalParameters": "allowed"
+              },
+              "semanticObject": "EBLOGScheduleWindow",
+              "action": "manage",
+              "title": "{{flpTitle}}",
+              "subTitle": "{{flpSubtitle}}",
+              "icon": ""
+          }
+      }
     }
   },
   "sap.ui": {
