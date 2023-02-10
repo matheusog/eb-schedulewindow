@@ -15,10 +15,10 @@ server:
             - /resources
             - /test-resources
           url: https://ui5.sap.com
-          version: 1.44.08 # The UI5 version, for instance, 1.78.1. Empty string means latest version
+          version: 1.44.19 # The UI5 version, for instance, 1.78.1. Empty string means latest version
         backend:
           - path: /sap
-            url: http://brspowvgtw01.enterprise.ad:8000
+            url: http://brspowvgtq01.enterprise.ad:8000
             client: '001'
             credentials:
               username: ${env.UI5_USERNAME}

@@ -152,7 +152,9 @@ sap.ui.define([
 					oLocalModel.setProperty("/textSuccess", oRet.getModel("i18n").getProperty("CLOSE"));
 					oLocalModel.setProperty("/title", oRet.getModel("i18n").getProperty("MESSAGE_VIEW_TITLE"));
 					var aFilters = [];
-					oItemBinding.filter(aFilters);
+					if(oItemBinding) {
+						oItemBinding.filter(aFilters);
+					}
 					fnResolve(oRet);
 					
 				});

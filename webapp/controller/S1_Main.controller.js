@@ -39,18 +39,15 @@ sap.ui.define([
 
                 this._oSMTable  = this.getView().byId("smTable");
                 this._oSMFilter = this.getView().byId("smartFilterBar");
-                this._getURLParameters();
-
+                // create an instance of the navigation handler
+                this._oNavigationHandler = new NavigationHandler(this);
+                
                 // create a new Application state (oAppState) for this Application instance
                 // this._oAppState = 
                 //     sap.ushell.Container
                 //         .getService("CrossApplicationNavigation")
                 //         .createEmptyAppState(this.getOwnerComponent());
                 // this._bHashChanged = false; 
-
-                // create an instance of the navigation handler
-                this._oNavigationHandler = new NavigationHandler(this);
-                this._initStateHandler();
 
                 this.setModel(
                     models.createViewModel({
@@ -60,6 +57,16 @@ sap.ui.define([
                     }), "view");
 
                 this._oNotaFiscalPopUp = new NotaFiscalPopUp(this.getModel(), this); 
+
+                if(this._oSMFilter.isInitialised()) {
+                    this._getURLParameters();
+                    this._initStateHandler();
+                } else {
+                    this._oSMFilter.attachEvent("initialise", (oEvent) => {
+                        this._getURLParameters();
+                        this._initStateHandler();
+                    }, this);
+                }                
             },
 
             /**
@@ -407,6 +414,20 @@ sap.ui.define([
             },
 
             /**
+             * Montagem da URL/chave de ScheduleWindow
+             * @private
+             * @param {object} oObject Objeto com as propriedades de ScheduleWindow
+             * @returns {string} Chave retornada
+             */
+            _buildScheduleWindowKey: function(oObject) {
+                let sPlant              = encodeURIComponent(oObject.Plant), 
+                    sScheduleWindowTp   = encodeURIComponent(oObject.ScheduleWindowTp), 
+                    sScheduleWindowGuid = encodeURIComponent(oObject.ScheduleWindowGuid);
+                var sPath = `/ScheduleWindowSet(Plant='${sPlant}',ScheduleWindowTp='${sScheduleWindowTp}',ScheduleWindowGuid='${sScheduleWindowGuid}')`;
+                return sPath; 
+            },
+
+            /**
              * Confirmação de alerta para o usuário
              * @private
              * @param {string} sMessage Mensagem de confirmação
@@ -458,7 +479,7 @@ sap.ui.define([
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                         "ScheduleWindowGuid": oObject.ScheduleWindowGuid, "ActivationStatus": bActivate };
                             let sETag = 
-                                this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                                this.getModel().getETag(this._buildScheduleWindowKey(oObject));
                             this._doFunctionCall("/ActivationChange", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
@@ -555,7 +576,7 @@ sap.ui.define([
                             let oParams= { "Plant": oObject.Plant, "ScheduleWindowTp": oObject.ScheduleWindowTp, 
                                            "ScheduleWindowGuid": oObject.ScheduleWindowGuid };
                             let sETag = //"";
-                              this.getModel().getETag(`/ScheduleWindowSet(Plant='${oObject.Plant}',ScheduleWindowTp='${oObject.ScheduleWindowTp}',ScheduleWindowGuid='${oObject.ScheduleWindowGuid}')`);
+                              this.getModel().getETag(this._buildScheduleWindowKey(oObject));
                             this._doFunctionCall("/DeleteScheduleWindow", "POST", oParams, sETag, "toSchedule,toPlant");
                                 // .then((oData, oResponse) => {
                                 //     this._displayMessages([{ Type: "S", Message: this.getText("message.inactivation_processed", [ oObject.Tknum ]) }], true, null, null);
@@ -786,12 +807,12 @@ sap.ui.define([
                             break;
                     }
                 });
-                this._oSMFilter.attachInitialized((oEvent) => {
+                //this._oSMFilter.attachInitialized((oEvent) => {
                     if(oFilterData) {
                         this._oSMFilter.setFilterData(oFilterData);
                         oFilterData = undefined;
                     }
-                });
+                //});
             }, 
 
             _initHashStateHandler: function() {

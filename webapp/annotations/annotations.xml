@@ -190,7 +190,7 @@
                                 </Record>
                                 <Record Type="Common.ValueListParameterIn">
                                     <PropertyValue Property="LocalDataProperty" PropertyPath="Plant"/>
-                                    <PropertyValue Property="ValueListProperty" String="SourcePlant"/>
+                                    <PropertyValue Property="ValueListProperty" String="Plant"/>
                                 </Record>
                                 <Record Type="Common.ValueListParameterConstant">
                                     <PropertyValue Property="Constant" String="false"/>
@@ -199,6 +199,9 @@
                                 <Record Type="Common.ValueListParameterConstant">
                                     <PropertyValue Property="Constant" String="SP"/>
                                     <PropertyValue Property="ValueListProperty" String="SchedulingStatus"/>
+                                </Record>
+                                <Record Type="Common.ValueListParameterDisplayOnly">
+                                    <PropertyValue Property="ValueListProperty" String="Plant"/>
                                 </Record>
                                 <Record Type="Common.ValueListParameterDisplayOnly">
                                     <PropertyValue Property="ValueListProperty" String="SourcePlant"/>
