@@ -3,9 +3,10 @@ sap.ui.define([
     "com/eldorado/sap/eblog/schedulewindow/model/MessageHandler",
     "com/eldorado/sap/eblog/schedulewindow/model/NotaFiscalPopUp",
     "com/eldorado/sap/eblog/schedulewindow/model/models", 
+    "sap/ui/core/format/DateFormat",
     "sap/ui/core/Fragment",
     "sap/ui/generic/app/navigation/service/NavigationHandler",
-    "sap/ui/generic/app/navigation/service/NavType",
+    "sap/ui/generic/app/navigation/service/NavType",    
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator", 
     "sap/m/MessageBox"
@@ -22,7 +23,7 @@ sap.ui.define([
      * @param {sap.ui.model.FilterOperator} FilterOperator
      * @param {sap.m.MessageBox} MessageBox
      */
-    function (BaseController, MessageHandler, NotaFiscalPopUp, models, Fragment, NavigationHandler, NavType, Filter, FilterOperator, MessageBox) {
+    function (BaseController, MessageHandler, NotaFiscalPopUp, models, DateFormat, Fragment, NavigationHandler, NavType, Filter, FilterOperator, MessageBox) {
         "use strict";
 
         return BaseController.extend("com.eldorado.sap.eblog.schedulewindow.controller.S1_Main", {
@@ -173,12 +174,13 @@ sap.ui.define([
 
                 //Begin and End Dates filters
                 let oBegDate, oEndDate;
+                let oDateFormat = DateFormat.getDateTimeInstance({ UTC: false });
                 if(oDPSchedBegDate && oDPSchedBegDate.getDateValue()) {
-                    oBegDate = oDPSchedBegDate.getDateValue();
+                    oBegDate = oDateFormat.parse(oDateFormat.format(oDPSchedBegDate.getDateValue()), true);
                 }
 
                 if(oDPSchedEndDate && oDPSchedEndDate.getDateValue()) {
-                    oEndDate = oDPSchedEndDate.getDateValue();
+                    oEndDate = oDateFormat.parse(oDateFormat.format(oDPSchedEndDate.getDateValue()), true);
                 }
 
                 let sOperator = oBegDate && oEndDate ? FilterOperator.BT : 
