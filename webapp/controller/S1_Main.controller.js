@@ -731,6 +731,9 @@ sap.ui.define([
                         this.getOwnerComponent().getComponentData().startupParameters : {};
                 
                 let aProperties = Object.getOwnPropertyNames(oStartupParameters);
+                let oCustomProps = Object.assign({},
+                        aProperties.filter((sProp) => sProp === "ScheduleWindowBegDateFilter" ||
+                                                      sProp === "ScheduleWindowEndDateFilter" ));
                 aProperties = aProperties.filter((sProp) => sProp === "Plant" ||
                                                             sProp === "ScheduleWindowTp" ||
                                                             sProp === "ScheduleDate" ||
@@ -754,18 +757,27 @@ sap.ui.define([
                         case "ScheduleDate": 
                         case "ScheduleWindowBeginDatetime":
                         case "ScheduleWindowEndDatetime":
+
                             let oBegDate = null, oEndDate = null;
-                            if(sProp === "ScheduleDate") {
-                                let oFormatOptions = { "pattern": "yyyy-MM-ddTHH:mm:ss.SSS", "UTC": false, "strictParsing": false };
-                                let oDateInstance = sap.ui.core.format.DateFormat.getDateInstance(oFormatOptions, null);
+                            let oFormatOptions = { "pattern": "yyyy-MM-ddTHH:mm:ss.SSS", "UTC": false, "strictParsing": false };
+                            let oDateInstance = sap.ui.core.format.DateFormat.getDateInstance(oFormatOptions, null);
+                            if(sProp === "ScheduleDate") {  
                                 oBegDate = oDateInstance.parse(oStartupParameters[sProp][0].substring(0,23));
                                 oEndDate = oDateInstance.parse(oStartupParameters[sProp][0].substring(0,11).concat("23:59:59.000"));
-                            } else {
+                            } else {                                                                
                                 if(sProp === "ScheduleWindowBeginDatetime") {
-                                    oBegDate = new Date(oStartupParameters[sProp][0]);
+                                    let sBegDate = oStartupParameters["ScheduleWindowBegDateFilter"] && oStartupParameters["ScheduleWindowBegDateFilter"].length > 0 ? 
+                                        oStartupParameters["ScheduleWindowBegDateFilter"][0].substring(0,23) : 
+                                        oStartupParameters[sProp][0].substring(0,20);
+                                    //oBegDate = new Date(oStartupParameters[sProp][0]);
+                                    oBegDate = oDateInstance.parse(sBegDate);
                                 }
                                 if(sProp === "ScheduleWindowEndDatetime") {
-                                    oEndDate = new Date(oStartupParameters[sProp][0]);
+                                    let sEndDate = oStartupParameters["ScheduleWindowEndDateFilter"] && oStartupParameters["ScheduleWindowEndDateFilter"].length > 0 ? 
+                                        oStartupParameters["ScheduleWindowEndDateFilter"][0].substring(0,23) : 
+                                        oStartupParameters[sProp][0].substring(0,20);
+                                    //oEndDate = new Date(oStartupParameters[sProp][0]);
+                                    oEndDate = oDateInstance.parse(sEndDate);
                                 }
                             }
                             if(oBegDate) {
